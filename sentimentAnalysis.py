@@ -1,6 +1,7 @@
 import csv
 import tweepy
 from textblob import TextBlob
+from textblob_fr import PatternTagger, PatternAnalyzer
 import operator
 # Step 1 - Authenticate
 consumer_key= 'ffsbeAoOlbji49uLR5xE8ujGi' #CONSUMER_KEY_HERE
@@ -14,15 +15,15 @@ auth.set_access_token(access_token, access_token_secret)
 
 api = tweepy.API(auth)
 
-topic = 'Life'
+topic = 'India'
 
-with open('new_file.csv','wb') as new_file:
+with open('%s.csv'%topic,'wb') as new_file:
 	new_file.write('tweet,sentiment\n')
-	public_tweets = api.search(topic)
+	public_tweets = api.search(topic,count=100)
 	for tweet in public_tweets:
-	    print(tweet.text)
+	    #print(tweet.text)
 	    #Step 4 Perform Sentiment Analysis on Tweets
-        analysis = TextBlob(tweet.text)
-        print(analysis.sentiment)
-        print("")
-        new_file.write('%s,%s\n'%(str(tweet.text),str(analysis.sentiment)))
+	    analysis = TextBlob(tweet.text, pos_tagger=PatternTagger(), analyzer=PatternAnalyzer())
+	    print(analysis.sentiment)
+	    print("")
+	    new_file.write('%s,%s\n'%(str(tweet.text.encode('utf8')),str(analysis.sentiment)))
